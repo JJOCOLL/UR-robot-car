@@ -1,9 +1,12 @@
-
 #include "SR04.h"
 
 long Front_Distance = 0;//储存前面距离变量
 long Left_Distance = 0;//储存左面距离变量
 long Right_Distance = 0;//储存右面距离变量
+
+long Front_Distance2 = 0;//储存前面距离变量
+long Left_Distance2 = 0;//储存左面距离变量
+long Right_Distance2 = 0;//储存右面距离变量
 
 //UltraSonicDistanceSensor distanceSensor(13, 12);
 
@@ -135,13 +138,27 @@ void check_distance(){
 }
 
 void movement(){
-  check_distance();
+    check_distance();
+  
+  int back = 0;
+  Left_Distance2 = Left_Distance;
+  Front_Distance2 = Front_Distance;
+  Right_Distance2 = Right_Distance;
+  for(int i=0; i<2; i++){     //if run getDistance() for three times
+    if(Left_Distance2 == Left_Distance && Front_Distance2 == Front_Distance && Right_Distance2 == Right_Distance2){
+      back++;
+    }
+
+    if(back >5){
+      moveBackward(100);
+    }
+  }
   if (Front_Distance < front_defined_distance){
-    brake();
+    moveBackward(100);
     if(Left_Distance < left_defined_distance && Left_Distance > 0){
-      turnRight(75);
+      turnRight(55);
     }else{
-      turnLeft(75);
+      turnLeft(55);
     }
   }else{
     /*
