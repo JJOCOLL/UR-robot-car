@@ -14,9 +14,11 @@ long Right_Distance = 0;//储存右面距离变量
 #define TRIGGER_PIN_Left 12
 #define ECHO_PIN_Left A1
 
-int left_defined_distance = 20;
-int front_defined_distance = 15;
-int right_defined_distance = 15;
+int back = 0;
+
+int left_defined_distance = 30;
+int front_defined_distance = 18;
+int right_defined_distance = 30;
 
 int tooclose_defined_distance = 1;
 
@@ -47,11 +49,11 @@ void brake() {
 
 // the connection of the motors is not well set uo and may need further re-soldering
 void moveForward(int speed) {
-  analogWrite(motorRight_in1, speed/2);
+  analogWrite(motorRight_in1, speed);
   analogWrite(motorRight_in2, 0);
   analogWrite(motorLeft_in2, speed);
   analogWrite(motorLeft_in1, 0);
-  delay(50);
+  //delay(50);
 }
 
 void turnLeft(int speed) {
@@ -59,7 +61,7 @@ void turnLeft(int speed) {
   analogWrite(motorRight_in2, speed);
   analogWrite(motorLeft_in2, speed);
   analogWrite(motorLeft_in1, 0);
-  delay(50);
+  //delay(50);
 }
 
 void turnRight(int speed) {
@@ -67,7 +69,7 @@ void turnRight(int speed) {
   analogWrite(motorRight_in2, 0);
   analogWrite(motorLeft_in2, 0);
   analogWrite(motorLeft_in1, speed);
-  delay(50);
+  //delay(50);
 }
 
 void moveBackward(int speed) {
@@ -75,7 +77,7 @@ void moveBackward(int speed) {
   analogWrite(motorRight_in2, speed);
   analogWrite(motorLeft_in2, 0);
   analogWrite(motorLeft_in1, speed);
-  delay(50);
+  //delay(50);
 }
 
 void deviation_to_right(int speed){
@@ -83,7 +85,7 @@ void deviation_to_right(int speed){
   analogWrite(motorRight_in2, 0);
   analogWrite(motorLeft_in2, speed);
   analogWrite(motorLeft_in1, 0);
-  delay(50);
+  //delay(50);
 }
 
 void deviation_to_left(int speed){
@@ -91,16 +93,16 @@ void deviation_to_left(int speed){
   analogWrite(motorRight_in2, 0);
   analogWrite(motorLeft_in2, speed*0.9);
   analogWrite(motorLeft_in1, 0);
-  delay(50);
+  //delay(50);
 }
 ///////////////////////Movement of Robot///////////////////////
 
 
 long getDistance(long distance, int direct){
-  int back = 0;
-  while(distance > 200 && distance < 0){
-    if(back > 10){
-      moveBackward(100);
+  
+  while(distance > 250 && distance < 0){
+    if(back > 3){     //if run getDistance() for three times
+      moveBackward(150);
     }
     
     switch(direct){
@@ -122,31 +124,27 @@ long getDistance(long distance, int direct){
   return distance;
 }
 
-void check_distance(int direct){
-  switch(direct){
-    case 1:
-      Left_Distance = getDistance(sr04_left.Distance(), 1);//读取超声波距离
-      break;
-    case 2:
-      Front_Distance = getDistance(sr04_front.Distance(), 2);//读取超声波距离
-      break;
-    case 3:
-      Right_Distance = getDistance(sr04_right.Distance(), 3);//读取超声波距离
-      break;
-  }
+void check_distance(){
+
+  Left_Distance = getDistance(sr04_left.Distance(), 1);//读取超声波距离
+
+  Front_Distance = getDistance(sr04_front.Distance(), 2);//读取超声波距离
+
+  Right_Distance = getDistance(sr04_right.Distance(), 3);//读取超声波距离
+
 }
 
 void movement(){
-  check_distance(2);
+  check_distance();
   if (Front_Distance < front_defined_distance){
     brake();
-    check_distance(1);
-    if(Left_Distance < left_defined_distance){
-      turnRight(55);
+    if(Left_Distance < left_defined_distance && Left_Distance > 0){
+      turnRight(75);
     }else{
-      turnLeft(55);
+      turnLeft(75);
     }
   }else{
+    /*
     check_distance(1);
     check_distance(3);
     if((Right_Distance - Left_Distance) > tooclose_defined_distance){
@@ -154,8 +152,9 @@ void movement(){
     }else if((Left_Distance - Right_Distance) > tooclose_defined_distance){
       deviation_to_right(100);
     }else{
-      moveForward(150);
-    }
+    */
+      moveForward(100);
+    //}
   }
 }
 
